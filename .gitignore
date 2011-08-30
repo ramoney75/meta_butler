@@ -1,0 +1,8 @@
+bin
+build
+include
+lib
+man
+*.pyc
+.Python
+config.txt

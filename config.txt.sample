@@ -1,0 +1,5 @@
+[herder]
+
+servers: http://oneserver:8080/, http://twoservers:9080/
+memcache_host: 127.0.0.1
+memcache_port: 11211
