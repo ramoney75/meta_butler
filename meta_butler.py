@@ -5,9 +5,9 @@ class MetaButler:
   def __init__(self):
     self.config = ConfigParser.ConfigParser()
     self.config.readfp(open("config.txt"))
-    self.servers = self.parse_servers_config(self.config.get("herder", "servers"))
-    connection_string = self.config.get("herder", "memcache_host") + ":"
-    connection_string += self.config.get("herder", "memcache_port")
+    self.servers = self.parse_servers_config(self.config.get("meta_butler", "servers"))
+    connection_string = self.config.get("meta_butler", "memcache_host") + ":"
+    connection_string += self.config.get("meta_butler", "memcache_port")
     self.mc = memcache.Client([connection_string], debug=0)
     self.jobs = {}
     
@@ -59,13 +59,21 @@ class MetaButler:
   def do_your_job(self):
     for server in self.servers:
       jobs_content = self.download_server_info(server)
-      self.collect_jobs_from_json(server, jobs_content)
+      try:
+        self.collect_jobs_from_json(server, jobs_content)
+      except Exception, (error):
+        print "error collecting jobs from this content: "
+        print jobs_content
       
       claims_content = self.download_claim_info(server)
-      self.collect_claims_from_html(server, claims_content)
+      try:
+        self.collect_claims_from_html(server, claims_content)
+      except Exception, (error):
+        print "error collecting claims from this content: "
+        print claims_content
       
-      self.add_refresh_time_to_jobs()
-      self.save_jobs()
+    self.add_refresh_time_to_jobs()
+    self.save_jobs()
     
     
   @classmethod

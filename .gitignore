@@ -6,3 +6,4 @@ man
 *.pyc
 .Python
 config.txt
+nohup.out
