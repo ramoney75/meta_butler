@@ -23,8 +23,8 @@ class MetaButler:
       job_name = self.get_job_name_from_row(row)
       
       if claimer is not None and job_name is not None:
-        if self.jobs[server + "::::" + job_name] is not None:
-          self.jobs[server + "::::" + job_name]['claim'] = claimer
+        if self.jobs[server + "jobs/" + job_name] is not None:
+          self.jobs[server + "jobs/" + job_name]['claim'] = claimer
         
   
   def get_job_name_from_row(self, row):
@@ -44,8 +44,8 @@ class MetaButler:
   def collect_jobs_from_json(self, server, json_string):
     o = json.loads(json_string)
     for job in o['jobs']:
-      id = server + "::::" + job['name']
-      job_hash = {"name" : job['name'], "url": server + "jobs/" + job['name'], "server" : server, "color" : job['color']}
+      id = server + "jobs/" + job['name']
+      job_hash = {"name" : job['name'], "server" : server, "color" : job['color']}
       self.jobs[id] = job_hash
   
   def save_jobs(self):

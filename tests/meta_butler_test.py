@@ -21,17 +21,16 @@ class TestHerding:
   def test_collect_jobs_from_json(self):
     butler = MetaButler()
     butler.collect_jobs_from_json('http://ci.dev/', '{"jobs":[{"name": "job1", "color": "blue"}]}')
-    job = butler.jobs["http://ci.dev/::::job1"]
+    job = butler.jobs["http://ci.dev/jobs/job1"]
     assert job['name'] == "job1"
     assert job['server'] == "http://ci.dev/"
-    assert job['url'] == "http://ci.dev/jobs/job1"
     assert job['color'] == "blue"
     
   def test_collect_claims_from_html(self):
     butler = MetaButler()
     butler.jobs = {
-      "http://ci.dev/::::unit_tests": {"name": "unit_tests"}, 
-      "http://ci.dev/::::acceptance_tests": {"name": "acceptance_tests"}, 
+      "http://ci.dev/jobs/unit_tests": {"name": "unit_tests"}, 
+      "http://ci.dev/jobs/acceptance_tests": {"name": "acceptance_tests"}, 
     }
     html_content = """
     <table class="sortable pane bigtable" id="projectStatus">
@@ -54,8 +53,8 @@ class TestHerding:
     </table>
     """
     butler.collect_claims_from_html('http://ci.dev/', html_content)
-    assert butler.jobs["http://ci.dev/::::unit_tests"]['claim'] == "Gob Bluth"
-    assert butler.jobs["http://ci.dev/::::acceptance_tests"]['claim'] == "Michael Bluth"
+    assert butler.jobs["http://ci.dev/jobs/unit_tests"]['claim'] == "Gob Bluth"
+    assert butler.jobs["http://ci.dev/jobs/acceptance_tests"]['claim'] == "Michael Bluth"
     
   def test_save_jobs_to_memcached(self):
     memcache_client_patcher = patch('memcache.Client')
@@ -72,7 +71,7 @@ class TestHerding:
     fake_strftime.return_value = "some time"
     butler = MetaButler()
     butler.jobs = {
-      "http://ci.dev/::::unit_tests": {"name": "unit_tests"}
+      "http://ci.dev/jobs/unit_tests": {"name": "unit_tests"}
     }
     butler.add_refresh_time_to_jobs()
-    assert butler.jobs["http://ci.dev/::::unit_tests"]["refresh"] == "some time"
+    assert butler.jobs["http://ci.dev/jobs/unit_tests"]["refresh"] == "some time"
